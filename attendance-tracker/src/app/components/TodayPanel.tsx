@@ -53,7 +53,7 @@ export default function TodayPanel() {
         setDate(current)
         setDName(dayName(current))
       }
-    }, 60000) // check every minute
+    }, 60000)
 
     return () => clearInterval(interval)
   }, [date, userEditedDate])
@@ -160,7 +160,7 @@ export default function TodayPanel() {
 
   return (
     <div>
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex-1">
           <label className="text-xs text-gray-500 block mb-1">Date</label>
           <input
@@ -223,7 +223,7 @@ export default function TodayPanel() {
                     return (
                       <div
                         key={key}
-                        className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-gray-50 rounded-lg px-3 py-2"
                       >
                         <span className="text-xs text-gray-500">
                           {count > 1 ? `Session ${i + 1}` : 'Session'}

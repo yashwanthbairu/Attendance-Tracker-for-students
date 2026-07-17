@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="pb-14">
+      <body className="pb-16 sm:pb-14">
         {children}
         <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-2">
           <p className="text-[11px] text-gray-400 text-center leading-relaxed max-w-2xl mx-auto">

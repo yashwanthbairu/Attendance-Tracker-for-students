@@ -38,12 +38,12 @@ export default function DashboardTabs() {
 
   return (
     <div>
-      <div className="flex gap-1 bg-white border border-gray-100 shadow-sm rounded-xl p-1 mb-6 w-fit">
+      <div className="flex gap-1 bg-white border border-gray-100 shadow-sm rounded-xl p-1 mb-6 w-full sm:w-fit overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActive(tab)}
-            className={`px-4 py-1.5 text-sm rounded-md transition ${
+            className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-md transition whitespace-nowrap ${
               active === tab
                 ? 'bg-white text-indigo-600 shadow-sm font-medium'
                 : 'text-gray-500 hover:text-gray-700'
@@ -54,7 +54,7 @@ export default function DashboardTabs() {
         ))}
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl p-6 min-h-[300px] shadow-sm">
+      <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 min-h-[300px] shadow-sm">
         {active === 'Today' && <TodayPanel />}
         {active === 'Subjects' && <SubjectsPanel />}
         {active === 'Analytics' && <AnalyticsPanel />}

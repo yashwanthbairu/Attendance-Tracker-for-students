@@ -157,8 +157,8 @@ export default function AnalyticsPanel() {
       ) : (
         <>
           <p className="text-xs text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2 mb-4">
-  Click on each subject to see detailed analysis.
-</p>
+            Click on each subject to see detailed analysis.
+          </p>
           <div className="space-y-4">
             {stats.map((s) => {
               const pct = s.total ? Math.round((s.present / s.total) * 1000) / 10 : 0
@@ -204,11 +204,11 @@ export default function AnalyticsPanel() {
 
       {selectedSubject && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/40 flex items-center justify-center p-3 sm:p-4 z-50"
           onClick={closeModal}
         >
           <div
-            className="bg-white rounded-2xl shadow-lg max-w-md w-full max-h-[80vh] overflow-y-auto p-6"
+            className="bg-white rounded-2xl shadow-lg max-w-md w-full max-h-[85vh] overflow-y-auto p-4 sm:p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-1">
@@ -224,10 +224,7 @@ export default function AnalyticsPanel() {
                   {selectedSubject.type}
                 </span>
               </div>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-700 text-sm"
-              >
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-700 text-sm">
                 ✕
               </button>
             </div>

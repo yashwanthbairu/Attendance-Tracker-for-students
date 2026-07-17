@@ -212,7 +212,7 @@ export default function HistoryPanel() {
             </div>
 
             {isEditing && (
-              <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex flex-col sm:flex-row gap-2 mt-3 pt-3 border-t border-gray-100">
                 <select
                   value={addingSubjectId[day.date] ?? ''}
                   onChange={(e) =>

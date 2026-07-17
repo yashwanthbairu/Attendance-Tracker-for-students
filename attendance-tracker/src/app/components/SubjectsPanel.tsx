@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 type Subject = {
@@ -11,7 +10,6 @@ type Subject = {
 }
 
 export default function SubjectsPanel() {
-  const router = useRouter()
   const supabase = createClient()
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [loading, setLoading] = useState(true)
@@ -47,23 +45,22 @@ export default function SubjectsPanel() {
     })
     setName('')
     loadSubjects()
-    router.refresh()
   }
 
   async function handleRemove(id: string) {
     if (!confirm('Remove this subject? Past attendance records stay in history.')) return
     await supabase.from('subjects').delete().eq('id', id)
     loadSubjects()
-    router.refresh()
   }
 
   if (loading) return <p className="text-sm text-gray-400">Loading...</p>
 
   return (
     <div>
-        <p className="text-xs text-gray-500 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2 mb-4">
-      Add all the classes and labs you have this semester. Once added, you can select these subjects each day to mark your attendance.
-    </p>
+      <p className="text-xs text-gray-500 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2 mb-4">
+        Add all the classes and labs you have this semester. Once added, you can select these subjects each day to mark your attendance.
+      </p>
+
       <div className="space-y-2 mb-6">
         {subjects.length === 0 && (
           <p className="text-sm text-gray-400">No subjects yet — add your first one below.</p>
@@ -95,27 +92,29 @@ export default function SubjectsPanel() {
         ))}
       </div>
 
-      <form onSubmit={handleAdd} className="flex gap-2">
+      <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-2">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Data Structures"
           className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as 'theory' | 'lab')}
-          className="border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          <option value="theory">Theory</option>
-          <option value="lab">Lab</option>
-        </select>
-        <button
-          type="submit"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium"
-        >
-          Add
-        </button>
+        <div className="flex gap-2">
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as 'theory' | 'lab')}
+            className="border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="theory">Theory</option>
+            <option value="lab">Lab</option>
+          </select>
+          <button
+            type="submit"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium whitespace-nowrap"
+          >
+            Add
+          </button>
+        </div>
       </form>
     </div>
   )

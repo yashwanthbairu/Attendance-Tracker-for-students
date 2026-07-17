@@ -97,7 +97,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+      <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 p-6 sm:p-8 shadow-sm">
         <h1 className="text-xl font-semibold text-gray-900 mb-1">
           {mode === 'login' ? 'Log in' : 'Create account'}
         </h1>
