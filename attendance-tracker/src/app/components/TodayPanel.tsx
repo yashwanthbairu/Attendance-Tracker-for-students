@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 type Subject = { id: string; name: string; type: 'theory' | 'lab' }
@@ -14,6 +15,7 @@ function dayName(dateStr: string) {
 }
 
 export default function TodayPanel() {
+  const router = useRouter()
   const supabase = createClient()
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [loading, setLoading] = useState(true)
@@ -116,6 +118,7 @@ export default function TodayPanel() {
     setCounts(Object.fromEntries(subjects.map((s) => [s.id, 0])))
     setStatuses({})
     setMessage({ text: 'Day saved successfully.', type: 'success' })
+    router.refresh()
     setTimeout(() => setMessage(null), 3000)
   }
 

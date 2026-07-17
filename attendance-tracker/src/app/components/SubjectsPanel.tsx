@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 type Subject = {
@@ -10,6 +11,7 @@ type Subject = {
 }
 
 export default function SubjectsPanel() {
+  const router = useRouter()
   const supabase = createClient()
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [loading, setLoading] = useState(true)
@@ -45,12 +47,14 @@ export default function SubjectsPanel() {
     })
     setName('')
     loadSubjects()
+    router.refresh()
   }
 
   async function handleRemove(id: string) {
     if (!confirm('Remove this subject? Past attendance records stay in history.')) return
     await supabase.from('subjects').delete().eq('id', id)
     loadSubjects()
+    router.refresh()
   }
 
   if (loading) return <p className="text-sm text-gray-400">Loading...</p>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 type Entry = {
@@ -18,6 +19,7 @@ type Day = {
 type Subject = { id: string; name: string; type: 'theory' | 'lab' }
 
 export default function HistoryPanel() {
+  const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [days, setDays] = useState<Day[]>([])
@@ -79,6 +81,7 @@ export default function HistoryPanel() {
   async function toggleStatus(entryId: string, newStatus: 'present' | 'absent') {
     await supabase.from('day_entries').update({ status: newStatus }).eq('id', entryId)
     await load()
+    router.refresh()
   }
 
   async function deleteDay(dayId: string) {
@@ -86,6 +89,7 @@ export default function HistoryPanel() {
     await supabase.from('attendance_days').delete().eq('id', dayId)
     if (editingDay === dayId) setEditingDay(null)
     await load()
+    router.refresh()
   }
 
   if (loading) return <p className="text-sm text-gray-400">Loading...</p>
