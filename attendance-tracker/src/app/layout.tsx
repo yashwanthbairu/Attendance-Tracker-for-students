@@ -1,16 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Attendance Tracker",
@@ -23,11 +12,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <body className="pb-14">
+        {children}
+        <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-2">
+          <p className="text-[11px] text-gray-400 text-center leading-relaxed max-w-2xl mx-auto">
+            We take reasonable measures to keep your personal information secure. However, we are not
+            liable for any loss of data resulting from unauthorized access, hacking, or other events
+            beyond our control.
+          </p>
+        </footer>
+      </body>
     </html>
   );
 }
