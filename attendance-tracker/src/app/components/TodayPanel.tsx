@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 type Subject = { id: string; name: string; type: 'theory' | 'lab' }
@@ -10,12 +9,12 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10)
 }
 function dayName(dateStr: string) {
-  const d = new Date(dateStr + 'T00:00:00')
-  return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()]
+  return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][
+    new Date(dateStr + 'T00:00:00').getDay()
+  ]
 }
 
 export default function TodayPanel() {
-  const router = useRouter()
   const supabase = createClient()
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [loading, setLoading] = useState(true)
@@ -23,6 +22,7 @@ export default function TodayPanel() {
 
   const [date, setDate] = useState(todayISO())
   const [dName, setDName] = useState(dayName(todayISO()))
+  const [userEditedDate, setUserEditedDate] = useState(false)
   const [counts, setCounts] = useState<Record<string, number>>({})
   const [statuses, setStatuses] = useState<Record<string, 'present' | 'absent'>>({})
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
@@ -46,9 +46,23 @@ export default function TodayPanel() {
     load()
   }, [])
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const current = todayISO()
+      if (!userEditedDate && current !== date) {
+        setDate(current)
+        setDName(dayName(current))
+      }
+    }, 60000) // check every minute
+
+    return () => clearInterval(interval)
+  }, [date, userEditedDate])
+
   function changeDate(newDate: string) {
     setDate(newDate)
     setDName(dayName(newDate))
+    setUserEditedDate(true)
+    setMessage(null)
   }
 
   function setCount(subjectId: string, delta: number) {
@@ -81,17 +95,30 @@ export default function TodayPanel() {
     }
 
     if (!allMarked) {
-        setMessage({ text: 'Please mark present/absent for every session before saving.', type: 'error' })
-        return
-      }
-      if (entries.length === 0) {
-        setMessage({ text: 'Select at least one class or lab for the day.', type: 'error' })
-        return
-      }
+      setMessage({ text: 'Please mark present/absent for every session before saving.', type: 'error' })
+      return
+    }
+    if (entries.length === 0) {
+      setMessage({ text: 'Select at least one class or lab for the day.', type: 'error' })
+      return
+    }
 
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+
+    const { data: existingDay } = await supabase
+      .from('attendance_days')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('date', date)
+      .maybeSingle()
+
+    if (existingDay) {
+      alert('You are trying to add records of a day you have already entered. You can edit that in the History section, or delete that day from History and come back here.')
+      setSaving(false)
+      return
+    }
 
     const { data: dayRow, error: dayError } = await supabase
       .from('attendance_days')
@@ -99,11 +126,11 @@ export default function TodayPanel() {
       .select()
       .single()
 
-      if (dayError || !dayRow) {
-        setMessage({ text: 'Something went wrong saving the day. Try again.', type: 'error' })
-        setSaving(false)
-        return
-      }
+    if (dayError || !dayRow) {
+      setMessage({ text: 'Something went wrong saving the day. Try again.', type: 'error' })
+      setSaving(false)
+      return
+    }
 
     const rows = entries.map((e) => ({
       attendance_day_id: dayRow.id,
@@ -118,7 +145,6 @@ export default function TodayPanel() {
     setCounts(Object.fromEntries(subjects.map((s) => [s.id, 0])))
     setStatuses({})
     setMessage({ text: 'Day saved successfully.', type: 'success' })
-    router.refresh()
     setTimeout(() => setMessage(null), 3000)
   }
 
@@ -233,24 +259,24 @@ export default function TodayPanel() {
           )
         })}
       </div>
-        
-      {message && (
-  <p
-    className={`text-xs mt-4 ${
-      message.type === 'success' ? 'text-emerald-600' : 'text-red-500'
-    }`}
-  >
-    {message.text}
-  </p>
-)}
 
-<button
-  onClick={handleSave}
-  disabled={saving}
-  className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2.5 rounded-lg disabled:opacity-50"
->
-  {saving ? 'Saving...' : 'Save day'}
-</button>
+      {message && (
+        <p
+          className={`text-xs mt-4 ${
+            message.type === 'success' ? 'text-emerald-600' : 'text-red-500'
+          }`}
+        >
+          {message.text}
+        </p>
+      )}
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2.5 rounded-lg disabled:opacity-50"
+      >
+        {saving ? 'Saving...' : 'Save day'}
+      </button>
     </div>
   )
 }

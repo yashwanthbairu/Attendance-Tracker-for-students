@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import SubjectsPanel from './SubjectsPanel'
 import TodayPanel from './TodayPanel'
 import AnalyticsPanel from './AnalyticsPanel'
@@ -10,7 +11,30 @@ const TABS = ['Today', 'Subjects', 'Analytics', 'History'] as const
 type Tab = (typeof TABS)[number]
 
 export default function DashboardTabs() {
-    const [active, setActive] = useState<Tab>('Today')
+  const supabase = createClient()
+  const [active, setActive] = useState<Tab | null>(null)
+
+  useEffect(() => {
+    async function decideStartTab() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setActive('Today')
+        return
+      }
+      const { data } = await supabase
+        .from('subjects')
+        .select('id')
+        .eq('user_id', user.id)
+        .limit(1)
+
+      setActive(data && data.length > 0 ? 'Today' : 'Subjects')
+    }
+    decideStartTab()
+  }, [])
+
+  if (active === null) {
+    return <p className="text-sm text-gray-400">Loading...</p>
+  }
 
   return (
     <div>
@@ -31,8 +55,8 @@ export default function DashboardTabs() {
       </div>
 
       <div className="bg-white border border-gray-100 rounded-2xl p-6 min-h-[300px] shadow-sm">
-        {active === 'Subjects' && <SubjectsPanel />}
         {active === 'Today' && <TodayPanel />}
+        {active === 'Subjects' && <SubjectsPanel />}
         {active === 'Analytics' && <AnalyticsPanel />}
         {active === 'History' && <HistoryPanel />}
       </div>

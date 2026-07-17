@@ -61,6 +61,9 @@ export default function SubjectsPanel() {
 
   return (
     <div>
+        <p className="text-xs text-gray-500 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2 mb-4">
+      Add all the classes and labs you have this semester. Once added, you can select these subjects each day to mark your attendance.
+    </p>
       <div className="space-y-2 mb-6">
         {subjects.length === 0 && (
           <p className="text-sm text-gray-400">No subjects yet — add your first one below.</p>

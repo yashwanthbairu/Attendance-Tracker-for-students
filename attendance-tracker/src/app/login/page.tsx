@@ -13,13 +13,15 @@ export default function LoginPage() {
   const [rollNumber, setRollNumber] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-  
+
     if (mode === 'signup') {
       if (!/^[A-Za-z\s]+$/.test(name.trim())) {
         setError('Name should only contain letters and spaces.')
@@ -30,17 +32,22 @@ export default function LoginPage() {
         return
       }
     }
-  
+
     if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
-        setError('Enter a valid email address.')
-        return
-      }
-  
+      setError('Enter a valid email address.')
+      return
+    }
+
     if (password.length < 8) {
       setError('Password must be at least 8 characters.')
       return
     }
-  
+
+    if (mode === 'signup' && password !== confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
+
     setLoading(true)
 
     if (mode === 'signup') {
@@ -97,7 +104,7 @@ export default function LoginPage() {
         <p className="text-sm text-gray-500 mb-6">
           {mode === 'login' ? 'Welcome back' : 'Set up your attendance tracker'}
         </p>
-  
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {mode === 'signup' && (
             <>
@@ -125,18 +132,44 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={8}
-          />
-  
+
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full pr-16 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-700"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
+          {mode === 'signup' && (
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          )}
+
+          {mode === 'signup' && confirmPassword && password !== confirmPassword && (
+            <p className="text-xs text-red-400">Passwords don&apos;t match yet.</p>
+          )}
+
           {error && <p className="text-red-500 text-xs">{error}</p>}
-  
+
           <button
             type="submit"
             disabled={loading}
@@ -145,9 +178,13 @@ export default function LoginPage() {
             {loading ? 'Please wait...' : mode === 'login' ? 'Log in' : 'Sign up'}
           </button>
         </form>
-  
+
         <button
-          onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+          onClick={() => {
+            setMode(mode === 'login' ? 'signup' : 'login')
+            setConfirmPassword('')
+            setError('')
+          }}
           className="text-sm text-gray-500 mt-4 w-full text-center hover:text-gray-900"
         >
           {mode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
