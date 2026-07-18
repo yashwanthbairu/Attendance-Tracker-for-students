@@ -8,7 +8,7 @@ export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
+  const [mode, setMode] = useState<'login' | 'signup'>('signup')
   const [name, setName] = useState('')
   const [rollNumber, setRollNumber] = useState('')
   const [email, setEmail] = useState('')
@@ -98,9 +98,13 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 p-6 sm:p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-gray-900 mb-1">
-          {mode === 'login' ? 'Log in' : 'Create account'}
-        </h1>
+        {mode === 'signup' ? (
+          <div className="inline-block bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-1 mb-1">
+            <h1 className="text-xl font-semibold text-indigo-700">New user? Create account</h1>
+          </div>
+        ) : (
+          <h1 className="text-xl font-semibold text-gray-900 mb-1">Log in</h1>
+        )}
         <p className="text-sm text-gray-500 mb-6">
           {mode === 'login' ? 'Welcome back' : 'Set up your attendance tracker'}
         </p>
