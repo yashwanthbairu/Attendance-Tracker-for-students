@@ -125,11 +125,11 @@ export default function HistoryPanel() {
   }
 
   if (loading) return <p className="text-sm text-gray-400">Loading...</p>
-  if (days.length === 0) return <p className="text-sm text-gray-400">No days logged yet.</p>
+if (days.length === 0) return <p className="text-sm text-gray-400">No days logged yet.</p>
 
-  return (
-    <div className="space-y-4">
-      {days.map((day) => {
+return (
+  <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+    {days.map((day) => {
         const isEditing = editingDate === day.date
         return (
           <div key={day.date} className="border border-gray-100 rounded-lg p-4">
